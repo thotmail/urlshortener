@@ -7,16 +7,19 @@ const { nanoid } = require('nanoid');
 
 const port = process.env.PORT || 8080
 
-const app = express();
-
 const db =  monk((process.env.NODE_ENV === "production")? process.env.MONGODB_URI : 'root:example@192.168.1.4:27017/');
 
 const urls = db.get('urls');
 urls.createIndex({alias: 1}, {unique: true});
 
-app.use(helmet());
+const app = express();
+app.set('trust-proxy', (process.env.PROXY)? true : false)
+
+app.use(helmet({
+    contentSecurityPolicy: false,
+}));
 app.use(morgan((process.env.NODE_ENV === "production")? 'common' : 'dev'));
-app.use(express.urlencoded({extended: true}))
+app.use(express.json())
 app.use(express.static('./static'));
 
 app.use((req, res, next) => {
@@ -67,14 +70,13 @@ app.post('/', async (req, res, next) =>{
 
 function notFound(req, res, next) {
     res.status(404);
-    const error = new Error('Not Found - ' + req.originalUrl);
-    next(error);
+    res.send('Not Found - ' + req.originalUrl);
   }
   
   function errorHandler(err, req, res, next) {
     res.status(res.statusCode || 500);
     res.json({
-      message: err.message,
+      error: err.message,
       stack: (process.env.NODE_ENV === "production")? "" : err.stack
     });
   }

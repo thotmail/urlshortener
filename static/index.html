@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,25 +14,36 @@
             padding: 0%;
             font-family: sans-serif;
         }
+        [v-cloak] {display: none}
     </style>
+
 </head>
+
 <body>
-    <h1>
-        
-    </h1>
-<br>
-    <form action = "/", method="POST">
-        
-        <label for="url">URL:</label>
+    <script src="https://unpkg.com/vue@3.0.11"></script>
+    <div id="app">
+        <h1>
+
+        </h1>
         <br>
-        <input name="url", required ,id="url", type="url", placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
-        <br><br>
-        <label for="alias">Short:</label>
-        <br>
-        <input name="alias", id="alias" placeholder="rick">
-        <br><br>
-        <button type="submit">Create</button>
-    </form>
-    
+        <form @submit.prevent="createShort">
+            <label>URL:</label>
+            <br>
+            <input placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ" v-model="url" type="url" required>
+            <br><br>
+            <label>Short:</label>
+            <br>
+            <input placeholder="rick" v-model="alias">
+            <br><br>
+            <button type="submit">Create</button>
+        </form>
+
+        <p v-if="res.error" v-cloak>{{res.error}}</p> 
+        <p v-else-if="res.message" v-cloak>{{res.message}} <a :href="res.alias">{{res.link}}</a></p>
+         
+    </div>
+
+    <script src="app.js"></script>
 </body>
+
 </html>
